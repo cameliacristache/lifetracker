@@ -1,0 +1,11 @@
+<template>
+    <form submit.delegate="login()">
+        <div class="alert alert-danger" if.bind="error">${error}</div>
+        <label for="username">E-mail</label>
+        <input class="form-control" type="text" id="username" value.bind="username">
+        <label for="password">Password</label>
+        <input class="form-control" type="password" id="password" value.bind="password">
+        <button class="btn btn-lg btn-primary btn-block login_button" disabled.bind="loginEnable">${loginButton}</button>
+        <a route-href="route: register" class="register">Do not have an account? Register here!</a>
+    </form>
+</template>

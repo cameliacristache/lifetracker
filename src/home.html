@@ -1,0 +1,238 @@
+<template>
+    <div class="header row hidden-xs">
+        <div class="col-md-12">
+            <div class="logo">
+                <img src="/images/LifeTracker-Logo.png" />
+            </div>
+            <div class="welcome">Welcome ${user.name}!</div>
+        </div>
+    </div>
+    <div class="header row hidden-md hidden-sm visible-xs">
+        <div class="col-md-12">
+            <div class="logo">
+                <img src="/images/LifeTracker-Logo.png" />
+                <div class="">Welcome ${user.name}!</div>
+            </div>
+        </div>
+    </div>
+    <div class="profile row">
+        <div class="media">
+            <div class="media-left">
+                <img class="profile_pic" src.bind="profile_pic" />
+            </div>
+            <div class="media-body">
+                <div class="stats">
+                    <div class="wrapper">
+                        <div class="progress">
+                            <div class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow.bind="lifenow" aria-valuemin="0" aria-valuemax.bind="lifetotal" css="width: ${lifeprogress}%">
+                                <i class="fa fa-heart"></i>
+                            </div>
+                            <span class="percentage">${lifenow} / ${lifetotal}</span>
+                        </div>
+                        <div class="progress">
+                            <div class="progress-bar progress-bar-warning" role="progressbar" aria-valuenow.bind="xpnow" aria-valuemin="0" aria-valuemax.bind="xptotal" css="width: ${xpprogress}%">
+                                <i class="fa fa-star"></i>
+                            </div>
+                            <span class="percentage">${xpnow} / ${xptotal}</span>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div class="media-right">
+                <div class="wrapper-coins">
+                    <div class="allcoins">
+                        <div class="gold coins">
+                            <img src="/images/gold.png" />
+                            <span>${gold}</span>
+                        </div>
+                        <div class="silver coins">
+                            <img src="/images/silver.png" />
+                            <span>${silver}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row main">
+        <div class="">
+        <div class="col-md-3 col-sm-6 col-xs-12">
+            <div class="wrapper-section">
+                <div class="title">Habbits</div>
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#habbitModal">Add new habbit</button>
+                <div class="tasks clearfix" repeat.for="habit of habits">
+                    <div class="habit-action" show.bind="habit.isPositive">
+                        <i click.trigger="$parent.addCoinsAndXP(habit.coins, habit.xp, habit.user_id)" class="fa fa-plus"></i>
+                    </div>
+                    <div class="habit-action"  show.bind="habit.isNegative">
+                        <i click.trigger="$parent.loosePoints(habit.xp, habit.user_id)" class="fa fa-minus"></i>
+                    </div>
+                    <div class="habit-action"  show.bind="habit.isBoth">
+                        <i click.trigger="$parent.addCoinsAndXP(habit.coins, habit.xp, habit.user_id)" class="fa fa-plus special1"></i><br/>
+                        <i click.trigger="$parent.loosePoints(habit.xp, habit.user_id)" class="fa fa-minus special2"></i>
+                    </div>
+                    <div class="habit-text">${habit.text}</div>
+                </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6 col-xs-12 section">
+            <div class="wrapper-section">
+                <div class="title">Daily</div>
+                <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#dailyModal">Add new daily task</button>
+                <div class="tasks clearfix" repeat.for="daily of dailies">
+                    <div class="daily-done" show.bind="daily.isDone">
+                        <i class="fa fa-check-square-o"></i>
+                    </div>
+                    <div class="daily-not-done"  show.bind="!daily.isDone">
+                        <i click.trigger="$parent.checkDaily(daily.id)" class="fa fa-square-o"></i>
+                    </div>
+                    <div class="daily-text">${daily.text}</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6 col-xs-12 section">
+            <div class="wrapper-section">
+                <div class="title">Tasks</div>
+                <button type="button" class="btn btn-inverse" data-toggle="modal" data-target="#taskModal">Add new task</button>
+                <div class="tasks clearfix" repeat.for="task of tasks">
+                    <div class="task-done" show.bind="task.isDone">
+                        <i class="fa fa-check-square-o"></i>
+                    </div>
+                    <div class="task-not-done"  show.bind="!task.isDone">
+                        <i click.trigger="$parent.checkTask(task.id)" class="fa fa-square-o"></i>
+                    </div>
+                    <div class="task-text">${task.text}</div><br/>
+                    <div class="task-deadline">${task.deadline}</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6 col-xs-12 section">
+            <div class="wrapper-section">
+                <div class="title">Rewards</div>
+                <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#rewardModal">Add new reward</button>
+                <div class="tasks clearfix" repeat.for="reward of rewards">
+                    <div class="reward-done">
+                        <i click.trigger="$parent.checkReward(reward.coins)" class="fa fa-check-square-o"></i>
+                    </div>
+                    <div class="reward-text">${reward.text} Gold: ${reward.gold} Silver: ${reward.silver}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<div class="modal fade" id="habbitModal" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Add new habbt</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <input type="text" placeholder="Description" class="form-control distanta" value.bind="habitDescription" />
+                    <select class="form-control select select-primary select-block mbl distanta" id="habitDifficulty" value.bind="habitDifficulty">
+                        <option value="">Difficulty</option>
+                        <option value="1">Easy</option>
+                        <option value="2">Hard</option>
+                    </select>
+                    <select class="form-control select select-primary select-block mbl distanta" id="habitAspect" value.bind="habitAspect">
+                        <option value="">Aspect</option>
+                        <option value="1">Positive</option>
+                        <option value="2">Negative</option>
+                        <option value="3">Both</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" click.trigger="addHabit()">Add habbit</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="dailyModal" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Add new daily task</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <input type="text" placeholder="Description" class="form-control distanta" value.bind="dailyDescription" />
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" click.trigger="addDaily()">Add daily</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="taskModal" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Add new task</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <input type="text" placeholder="Description" class="form-control distanta" value.bind="taskDescription" />
+                    <label>Deadline</label><br/>
+                    <input type="text" value.bind="taskDeadline" id="datepicker" />
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" click.trigger="addTask()">Add task</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="rewardModal" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Add new reward</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <input type="text" placeholder="Reward description" class="form-control distanta" value.bind="rewardDescription" />
+                    <input type="text" placeholder="Gold coins" class="form-control distanta" value.bind="goldCoins" />
+                    <input type="text" placeholder="Silver coins" class="form-control distanta" value.bind="silverCoins" />
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" click.trigger="addReward()">Add reward</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="resetModal" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Ooops! You died</h4>
+            </div>
+            <div class="modal-body">
+                But don't worry, you can start again by pressing the "Reset" button below.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" click.trigger="resetUser()">Reset</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+</template>

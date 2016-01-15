@@ -1,0 +1,17 @@
+<template>
+    <form submit.delegate="register()">
+        <div class="alert alert-danger" if.bind="error">${error}</div>
+        <label class="extra-label" for ="name">Name</label>
+        <input class="form-control" type="text" id="name" value.bind="nume">
+        <label class="extra-label">Gender</label>
+        <label class="gender-label"><input type="radio" name="gender" model.bind="1" checked.bind="gender" />Male</label>
+        <label class="gender-label"><input type="radio" name="gender" model.bind="2" checked.bind="gender" />Female</label>
+        <label class="extra-label" for="username">E-mail</label>
+        <input class="form-control" type="text" id="username" value.bind="username">
+        <label class="extra-label" for="password">Password</label>
+        <input class="form-control" type="password" id="password" value.bind="password">
+        <label class="extra-label" for="cfpassword">Confirm Password</label>
+        <input class="form-control" type="password" id="cfpassword" value.bind="cfpassword">
+        <button class="btn btn-lg btn-primary btn-block login_button" disabled.bind="registerEnable">${registerButton}</button>
+    </form>
+</template>
